@@ -7,69 +7,23 @@ import { errorHandler } from "./src/middleware/error-handler.js";
 
 const app = express();
 
-// const allowedOrigins = [
-//   "http://localhost:5173", // For local testing
-//   process.env.FRONTEND_URL,
-// ];
 
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       // Allow requests with no origin (like mobile apps or curl requests)
-//       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-//         callback(null, true);
-//       } else {
-//         callback(new Error("Not allowed by CORS"));
-//       }
-//     },
-//     methods: ["GET", "POST", "OPTIONS"],
-//     credentials: true,
-//   }),
-// );
-
-// Parse environment variable string into clean array elements
-const envOrigins = process.env.FRONTEND_URL
-  ? process.env.FRONTEND_URL.split(",").map(url => url.trim().replace(/\/$/, "")) // Strips accidental trailing slashes
-  : [];
-
-// const allowedOrigins = [
-//   "http://localhost:5173",
-//   "http://localhost:5174",
-//   "https://chatgpt-clone-frontend-six.vercel.app",
-//   "https://chatgpt-clone-frontend-git-main-gpt-clone.vercel.app",
-//   ...envOrigins
-// ];
-
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       // Stripping trailing slash from incoming browser headers just in case
-//       const cleanOrigin = origin ? origin.replace(/\/$/, "") : null;
-      
-//       if (!cleanOrigin || allowedOrigins.includes(cleanOrigin)) {
-//         callback(null, true);
-//       } else {
-//         callback(new Error(`CORS policy violation: ${origin} not allowed.`));
-//       }
-//     },
-//     methods: ["GET", "POST", "OPTIONS"],
-//     credentials: true,
-//   }),
-// );
-
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",")
-  : ["https://chatgpt-clone-frontend-six.vercel.app/"];
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.FRONTEND_URL,
+].filter(Boolean); // Removes undefined values
 
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl)
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
       }
     },
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"], // Added standard methods
     credentials: true,
   }),
 );
